@@ -1,77 +1,66 @@
-definaion = '''
-function name : say()
-arguements : text (str)
-description : This function takes a string input and uses the pyttsx3 library to convert the
-'''
-
 import os
-from dotenv import load_dotenv
-load_dotenv()
-DEBUG:bool = os.getenv("DEBUG") == "True"
-
-
-
-import re
-import pyttsx3
+import asyncio
+import edge_tts
 import inflect
-engine = pyttsx3.init() # object creation
+from just_playback import Playback
+import time
+import re
+from dotenv import load_dotenv
+
+load_dotenv()
+DEBUG: bool = os.getenv("DEBUG") == "True"
+
+VOICE = "en-US-ChristopherNeural" 
+OUTPUT_FILE = "test.mp3"
 p = inflect.engine()
 
-
-# RATE
-rate = engine.getProperty('rate')   # getting details of current speaking rate
-if DEBUG:
-    print (rate)                        # printing current voice rate
-engine.setProperty('rate', 100)     # setting up new voice rate
-
-# VOLUME
-volume = engine.getProperty('volume')   # getting to know current volume level (min=0 and max=1)
-if DEBUG:
-    print (volume)                          # printing current volume level
-engine.setProperty('volume',1.0)        # setting up volume level  between 0 and 1
-
-# VOICE
-voices = engine.getProperty('voices')       # getting details of current voice
-# engine.setProperty('voice', voices[0].id)  # changing index, changes voices. o for male
-engine.setProperty('voice', voices[1].id)   # changing index, changes voices. 1 for female
-
-
-
 def _process_text(text: str) -> str:
-    """Internal helper to convert digits to words within a sentence."""
+    """Internal helper to convert digits to words."""
     words = []
     for word in text.split():
-        # Clean the word of punctuation to check if it's a number
+        # Strip punctuation to check if it is a number
         clean_word = re.sub(r'[^\d]', '', word)
+        
         if clean_word.isdigit():
-            # Convert digits to words (e.g., "10" -> "ten")
+            # Convert "10" -> "ten"
             word_val = p.number_to_words(clean_word)
             words.append(word_val)
         else:
+            # Keep the original word (preserves punctuation for non-numbers)
             words.append(word)
+            
     return " ".join(words)
 
-def say(text: str)->None:
+async def speak(text):
+    # Generate the audio file
+    communicate = edge_tts.Communicate(text, VOICE, volume="+0%", rate="+0%")
+    await communicate.save(OUTPUT_FILE)
+    
+    # Play the audio file
+    playback = Playback()
+    playback.load_file(OUTPUT_FILE)
+    playback.play()
+    
+    # Wait for playback to finish
+    # We use a small sleep to prevent CPU hogging while waiting
+    while playback.active:
+        time.sleep(0.1)
 
-    # Pre-process the text to convert any numbers to words
-    processed_text = _process_text(text)
+def say(text: str) -> None:
+    """Synchronous wrapper for the async speak function."""
+    pt = _process_text(text)
     
     if DEBUG:
-        print(f"Original: {text}")
-        print(f"Speaking: {processed_text}")
-
-    engine.say(processed_text)
-    # engine.say('My current speaking rate is ' + str(rate))
-    engine.runAndWait()
-    engine.stop()
-
-    # Saving Voice to a file
-    # On Linux, make sure that 'espeak-ng' is installed
-    if DEBUG:
-        engine.save_to_file(processed_text, 'test.mp3')
-        engine.runAndWait()
+        print(f"[say] Speaking: {pt}")
+        
+    try:
+        # asyncio.run() automatically manages the event loop lifecycle.
+        # It creates a new loop, runs the task, and closes it.
+        asyncio.run(speak(pt))
+    except Exception as e:
+        print(f"Error in speech generation: {e}")
 
 if __name__ == "__main__":
-    text = "The current time is 10:05 AM"
-    pt = _process_text(text)
-    print(f"Processed Text: {pt}")
+    say("Hello! This is a test.")
+    say("I can now speak multiple sentences without crashing.")
+    say("The event loop is now managed correctly.")
