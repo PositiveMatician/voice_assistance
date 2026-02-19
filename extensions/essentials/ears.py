@@ -12,11 +12,11 @@ def listen(OUTPUT=DEBUG) -> str:
     """Function to listen from microphone and recognize speech using Google Speech Recognition."""
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        if OUTPUT:
-            rich.print("Adjusting for ambient noise, please wait...")
+        
+        rich.print("Adjusting for ambient noise, please wait...")
         r.adjust_for_ambient_noise(source)
-        if OUTPUT:
-            rich.print("Say something!")
+        
+        rich.print("Say something!")
         audio = r.listen(source)
     try:
         recognized_text = r.recognize_google(audio)

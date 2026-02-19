@@ -93,6 +93,7 @@ if __name__ == "__main__":
     cleanup_debug_files(files_to_clean_up_from_debugging)
     create_env_file()
     check_gemini_api_key()
+    # register["tell_time"]()
     # register["music"]("play")
     
     # cmd = ""
