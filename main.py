@@ -45,8 +45,10 @@ def main():
     all_tools_description = extract_function_descriptions()
 
     while True:
+        mouth.say("Please dictate the next command after beep")
         print(" \n")
         print("Listening for user input...")
+        mouth.say("BEEP")
         sound = ears.listen()
         print("processing...")
         

@@ -111,4 +111,4 @@ if __name__ == "__main__":
     # register["notes"]("list")
     # print(register["file_search"]("screenshot_20260219_033600.png"))
     # register["open_folder"](("downloads"))
-    # print(register["calculator"]("12 * 6"))
+    print(register["calculator"]("12 * 6"))
