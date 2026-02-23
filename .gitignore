@@ -77,6 +77,7 @@ reminder
 reminders.json
 # Audio outputs
 *.mp3
+music/
 # Screenshots
 Desktop/screenshots/
 screenshots/

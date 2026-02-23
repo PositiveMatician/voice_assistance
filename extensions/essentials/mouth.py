@@ -7,6 +7,7 @@ import time
 import re
 from dotenv import load_dotenv
 import random
+import json
 
 load_dotenv()
 DEBUG: bool = os.getenv("DEBUG") == "True"
@@ -19,7 +20,7 @@ p = inflect.engine()
 
 def load_memo_from_disk():
     """Load the memo cache from disk if it exists."""
-    if os.path.exists(cache_file_path):):
+    if os.path.exists(cache_file_path):
         with open(cache_file_path, "r") as f:
             return json.load(f)
     return {}
@@ -68,7 +69,7 @@ async def convert_text_to_audio(text , output_file=OUTPUT_FILE):
 def say(text: str) -> None:
     """Synchronous wrapper for the async speak function."""
     pt = _process_text(text)
-    output_file = f"audio_{random.randint(1000,9999)}.mp3"  # Generate a unique filename for each audio output
+    output_file = os.path.join(os.getcwd(), "music", f"audio_{random.randint(1000,9999)}.mp3")  # Generate a unique filename for each audio output
 
     if DEBUG:
         print(f"[say] Speaking: {pt}")
@@ -84,12 +85,6 @@ def say(text: str) -> None:
             memo[pt] = output_file  # Update cache with new file
         except Exception as e:
             print(f"Error generating audio: {e}")
-        finally:            
-            # Play the generated audio
-            try:
-                _play_audio(output_file)
-            except Exception as e:
-                print(f"Error playing audio: {e}")
 
     else:
         if DEBUG:
