@@ -23,7 +23,7 @@ def load_memo_from_disk():
         with open(cache_file_path, "r") as f:
             return json.load(f)
     return {}
-    
+
 memo = load_memo_from_disk()  # A simple in-memory cache to store previously spoken texts and their corresponding audio files.
 
 def save_memo_to_disk():
@@ -82,7 +82,6 @@ def say(text: str) -> None:
         try:
             asyncio.run(convert_text_to_audio(pt, output_file=output_file))
             memo[pt] = output_file  # Update cache with new file
-            save_memo_to_disk()  # Save the updated cache to disk
         except Exception as e:
             print(f"Error generating audio: {e}")
         finally:            
