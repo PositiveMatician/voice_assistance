@@ -13,7 +13,8 @@ from pathlib import Path
 register = rg.import_all_from_current_directory()
 
 files_to_clean_up_from_debugging = [
-    "test.mp3"
+    "test.mp3",
+    "notes.json"
 ]
 
 def cleanup_debug_files(file_list: list, base_path: str = None) -> None:
@@ -111,4 +112,4 @@ if __name__ == "__main__":
     # register["notes"]("list")
     # print(register["file_search"]("screenshot_20260219_033600.png"))
     # register["open_folder"](("downloads"))
-    print(register["calculator"]("12 * 6"))
+    # print(register["calculator"]("12 * 6"))
