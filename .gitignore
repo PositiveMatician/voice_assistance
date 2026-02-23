@@ -78,6 +78,8 @@ reminders.json
 # Audio outputs
 *.mp3
 music/
+# Model directory
+model/
 # Screenshots
 Desktop/screenshots/
 screenshots/
